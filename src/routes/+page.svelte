@@ -26,6 +26,11 @@
 	<header>
 		<h1>ホーム</h1>
 		<p>{user?.username}がログインしました</p>
-		<button onclick={handleLogout}>ログアウト</button>
+		<div>
+			<a href="/change-password">パスワード変更はこちら</a>
+		</div>
+		<div>
+			<button onclick={handleLogout}>ログアウト</button>
+		</div>
 	</header>
 </div>
