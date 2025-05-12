@@ -33,6 +33,9 @@
 			<a href="/users">ユーザー管理画面</a>
 		</div>
 		<div>
+			<a href="/tags">タグ管理画面</a>
+		</div>
+		<div>
 			<button onclick={handleLogout}>ログアウト</button>
 		</div>
 	</header>
