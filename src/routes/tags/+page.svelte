@@ -2,6 +2,8 @@
 	import { remult } from 'remult';
 	import { Tag } from '../../shared/Tag';
 
+	let cacheSearchWord = $state('');
+	let searchWord = $state('');
 	let tags = $state<Tag[]>([]);
 	const tagRepo = remult.repo(Tag);
 
@@ -15,12 +17,35 @@
 			await tagRepo.find().then((t) => (tags = t));
 		}
 	}
+
+	async function handleSearch(event: Event) {
+		event.preventDefault();
+		searchWord = searchWord.trim();
+		if (searchWord === '' || cacheSearchWord === searchWord) {
+			return;
+		}
+		cacheSearchWord = searchWord;
+
+		tags = await tagRepo.find({
+			where: {
+				name: {
+					$contains: searchWord
+				}
+			}
+		});
+	}
 </script>
 
 <div>
 	<h1>タグ管理</h1>
 
 	<a href="/tags/new">タグ登録</a>
+
+	<div>
+		<form onsubmit={handleSearch}>
+			<input type="search" placeholder="検索語を入力..." bind:value={searchWord} />
+		</form>
+	</div>
 
 	<table>
 		<thead>
