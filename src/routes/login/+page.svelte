@@ -3,8 +3,8 @@
 	import { goto } from '$app/navigation';
 	import { remult } from 'remult';
 	import { User } from '../../shared/User';
+	import { createHashedPassword, verifyHashedPassword } from '$lib';
 	import { setUser, currentUser } from '$lib/stores/userStore';
-	import { argon2id, argon2Verify } from 'hash-wasm';
 
 	let isLogin = $state(true);
 	let username = $state('');
@@ -39,10 +39,7 @@
 					return;
 				}
 
-				const passwordValid = await argon2Verify({
-					password,
-					hash: user.password
-				});
+				const passwordValid = await verifyHashedPassword(password, user.password);
 				if (!passwordValid) {
 					error = 'メールアドレスまたはパスワードが違います';
 					return;
@@ -52,15 +49,7 @@
 				goto('/');
 			} else {
 				// 新規登録処理
-				const hashedPassword = await argon2id({
-					password,
-					salt,
-					parallelism: 1,
-					iterations: 256,
-					memorySize: 512,
-					hashLength: 32,
-					outputType: 'encoded'
-				});
+				const hashedPassword = await createHashedPassword(password);
 
 				const newUser = await userRepo.save({
 					username,
