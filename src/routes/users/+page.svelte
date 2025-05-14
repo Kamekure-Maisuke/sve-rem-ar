@@ -2,6 +2,8 @@
 	import { remult } from 'remult';
 	import { User } from '../../shared/User';
 
+	let cacheSearchWord = $state('');
+	let searchWord = $state('');
 	let users = $state<User[]>([]);
 	const userRepo = remult.repo(User);
 
@@ -15,10 +17,33 @@
 			await userRepo.find().then((u) => (users = u));
 		}
 	}
+
+	async function handleSearch(event: Event) {
+		event.preventDefault();
+		searchWord = searchWord.trim();
+		if (searchWord === '' || cacheSearchWord === searchWord) {
+			return;
+		}
+		cacheSearchWord = searchWord;
+
+		users = await userRepo.find({
+			where: {
+				username: {
+					$contains: searchWord
+				}
+			}
+		});
+	}
 </script>
 
 <div>
 	<h1>ユーザー管理</h1>
+
+	<div>
+		<form onsubmit={handleSearch}>
+			<input type="search" placeholder="検索語を入力..." bind:value={searchWord} />
+		</form>
+	</div>
 
 	<table>
 		<thead>
